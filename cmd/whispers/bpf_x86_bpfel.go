@@ -12,11 +12,6 @@ import (
 	"github.com/cilium/ebpf"
 )
 
-type bpfEvent struct {
-	Pid  uint32
-	Line [80]uint8
-}
-
 // loadBpf returns the embedded CollectionSpec for bpf.
 func loadBpf() (*ebpf.CollectionSpec, error) {
 	reader := bytes.NewReader(_BpfBytes)
@@ -58,14 +53,14 @@ type bpfSpecs struct {
 //
 // It can be passed ebpf.CollectionSpec.Assign.
 type bpfProgramSpecs struct {
-	UretprobeBashReadline *ebpf.ProgramSpec `ebpf:"uretprobe_bash_readline"`
+	TracePamGetAuthtok *ebpf.ProgramSpec `ebpf:"trace_pam_get_authtok"`
 }
 
 // bpfMapSpecs contains maps before they are loaded into the kernel.
 //
 // It can be passed ebpf.CollectionSpec.Assign.
 type bpfMapSpecs struct {
-	Events *ebpf.MapSpec `ebpf:"events"`
+	Rb *ebpf.MapSpec `ebpf:"rb"`
 }
 
 // bpfObjects contains all objects after they have been loaded into the kernel.
@@ -87,12 +82,12 @@ func (o *bpfObjects) Close() error {
 //
 // It can be passed to loadBpfObjects or ebpf.CollectionSpec.LoadAndAssign.
 type bpfMaps struct {
-	Events *ebpf.Map `ebpf:"events"`
+	Rb *ebpf.Map `ebpf:"rb"`
 }
 
 func (m *bpfMaps) Close() error {
 	return _BpfClose(
-		m.Events,
+		m.Rb,
 	)
 }
 
@@ -100,12 +95,12 @@ func (m *bpfMaps) Close() error {
 //
 // It can be passed to loadBpfObjects or ebpf.CollectionSpec.LoadAndAssign.
 type bpfPrograms struct {
-	UretprobeBashReadline *ebpf.Program `ebpf:"uretprobe_bash_readline"`
+	TracePamGetAuthtok *ebpf.Program `ebpf:"trace_pam_get_authtok"`
 }
 
 func (p *bpfPrograms) Close() error {
 	return _BpfClose(
-		p.UretprobeBashReadline,
+		p.TracePamGetAuthtok,
 	)
 }
 

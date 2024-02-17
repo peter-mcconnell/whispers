@@ -19,14 +19,17 @@ whispers:
 
 .PHONY: docker-build
 docker-build:
-	docker build -t=$(DOCKER_IMG)-whispers:$(TAG) -f Dockerfile.whispers .
-	docker build -t=$(DOCKER_IMG)-ssh:$(TAG) -f Dockerfile.ssh .
+	docker build -t=$(DOCKER_IMG):$(TAG) -f Dockerfile .
 
 .PHONY: docker-run
 docker-run: docker-build
-	docker run --rm -p 2222:22 -d $(DOCKER_IMG)-ssh:$(TAG)
+	@-docker rm -f whispers > /dev/null 2>&1
+	docker run --privileged --pid=host -v /sys/kernel/:/sys/kernel/ --name whispers --rm -p 2222:22 -d $(DOCKER_IMG):$(TAG)
 
 .PHONY: docker-push
 docker-push:
-	docker push $(DOCKER_IMG)-ssh:$(TAG)
-	docker push $(DOCKER_IMG)-whispers:$(TAG)
+	docker push $(DOCKER_IMG):$(TAG)
+
+.PHONY: docker-exec
+docker-exec:
+	docker exec -ti whispers bash

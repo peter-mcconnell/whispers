@@ -14,4 +14,4 @@ go run github.com/cilium/ebpf/cmd/bpf2go -target amd64 bpf \
     ../../bpf/uretprobe.c -- \
     -I"${KERNEL_HEADERS}" \
     -I"${BPF_HELPERS_DIR}" \
-    -I../../headers
+    -I../../bpf/headers

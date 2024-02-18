@@ -6,13 +6,19 @@ on:
     branches:
       - main
  
+permissions:
+  contents: write
+
 jobs:
   test:
     runs-on: ubuntu-latest
+
     container:
       image: pemcconnell/whispers-base:latest
       env:
         KERNEL_HEADERS: /usr/src/linux-headers-6.5.0-14-generic
+        BUILD_VCS: false
+
     steps:
       - uses: actions/checkout@v4
 
@@ -22,8 +28,23 @@ jobs:
       - name: Test
         uses: robherley/go-test-action@v0.1.0
 
-      - name: Tag
-        uses: hennejg/github-tag-action@v4.4.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          release_branches: main
+      # - name: Tag
+      #   run: |
+      #     LAST_TAG=$(git rev-list --tags --max-count=1)
+      #     if [ "$LAST_TAG" = "" ]; then echo "failed to get last tag" && exit 1; fi
+
+      #     git config --global --add safe.directory '*'
+      #     git config --global user.email "actions@github.com"
+      #     git config --global user.name "GitHub Actions"
+
+      #     export PATH=$PATH:/github/home/go/bin/
+      #     go install github.com/davidrjonas/semver-cli@1.1.1
+      #     set -x
+      #     EXISTING_VERSION=$(git describe --tags $LAST_TAG)
+      #     NEW_VERSION="v$(semver-cli inc "minor" "$EXISTING_VERSION")"
+      #     set +x
+      #     if [ "$EXISTING_VERSION" = "$NEW_VERSION" ]; then echo "failed to calc new semver" && exit 1; fi
+      #     echo "version=$NEW_VERSION" >> $GITHUB_ENV
+
+      #     git tag $NEW_VERSION
+      #     git push origin --tags

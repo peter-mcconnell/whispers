@@ -1,6 +1,6 @@
 FROM ubuntu:22.04 AS base
 RUN apt-get update -yq && \
-		apt-get install -yq curl make clang llvm linux-headers-$(uname -r) && \
+		apt-get install -yq curl git make clang llvm linux-headers-$(uname -r) && \
 		curl -O -L https://go.dev/dl/go1.21.7.linux-amd64.tar.gz && \
 		tar -C /usr/local -xzf go1.21.7.linux-amd64.tar.gz && \
 		rm -rf /var/lib/apt/lists/*
@@ -13,10 +13,10 @@ ENV PATH=$PATH:/usr/local/go/bin
 COPY go.mod /src
 COPY go.sum /src
 RUN go mod tidy
-COPY . /src
 
 FROM ubuntu:22.04 AS build
 COPY --from=base / /
+COPY . /src
 WORKDIR /src
 ENV PATH=$PATH:/usr/local/go/bin
 RUN make whispers

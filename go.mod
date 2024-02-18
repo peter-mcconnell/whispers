@@ -1,4 +1,4 @@
-module github.com/peter-mcconnell/talk-bpf-ssh
+module github.com/peter-mcconnell/whispers
 
 go 1.21.4
 

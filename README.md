@@ -17,7 +17,11 @@ make docker-build
 Usage:
 
 ```sh
-whispers -binPath="/lib/x86_64-linux-gnu/libpam.so.0" -symbol="pam_get_authtok"
+Usage of ./bin/whispers:
+  -binPath string
+    	Path to the binary (default "/lib/x86_64-linux-gnu/libpam.so.0")
+  -symbol string
+    	Symbol to target (default "pam_get_authtok")
 ```
 
 Useful commands:

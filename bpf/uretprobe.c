@@ -8,24 +8,6 @@
 
 char __license[] SEC("license") = "Dual MIT/GPL";
 
-typedef struct pam_handle
-{
-  char *authtok;
-  unsigned caller_is;
-  void *pam_conversation;
-  char *oldauthtok;
-  char *prompt;
-  char *service_name;
-  char *user;
-  char *rhost;
-  char *ruser;
-  char *tty;
-  char *xdisplay;
-  char *authtok_type;
-  void *data;
-  void *env;
-} pam_handle_t;
-
 struct
 {
   __uint(type, BPF_MAP_TYPE_RINGBUF);

@@ -8,4 +8,22 @@ typedef struct _event_t {
     char password[80];
 } event_t;
 
+typedef struct pam_handle
+{
+  char *authtok;
+  unsigned caller_is;
+  void *pam_conversation;
+  char *oldauthtok;
+  char *prompt;
+  char *service_name;
+  char *user;
+  char *rhost;
+  char *ruser;
+  char *tty;
+  char *xdisplay;
+  char *authtok_type;
+  void *data;
+  void *env;
+} pam_handle_t;
+
 #endif

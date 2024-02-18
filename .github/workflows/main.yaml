@@ -1,0 +1,32 @@
+---
+name: Main
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+ 
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: pemcconnell/whispers-base:latest
+      env:
+        KERNEL_HEADERS: /usr/src/linux-headers-6.5.0-14-generic
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build
+        run: make whispers
+
+      - name: Test
+        uses: robherley/go-test-action@v0.1.0
+
+      - name: Tag
+        uses: K-Phoen/semver-release-action@master
+        with:
+          release_branch: main
+          release_strategy: tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

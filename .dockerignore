@@ -1,0 +1,7 @@
+.github
+*.md
+*.o
+bin/
+Dockerfile
+LICENSE
+pkg/whispers/bpf_x86_bpfel*

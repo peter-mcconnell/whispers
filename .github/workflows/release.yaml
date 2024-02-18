@@ -1,0 +1,28 @@
+---
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: pemcconnell/whispers-base:latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build
+        run: make whispers
+
+      - name: Test
+        uses: robherley/go-test-action@v0.1.0
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ./bin/whispers

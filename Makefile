@@ -19,7 +19,12 @@ whispers:
 
 .PHONY: docker-build
 docker-build:
-	docker build -t=$(DOCKER_IMG):$(TAG) -f Dockerfile .
+	docker build -t=$(DOCKER_IMG):$(TAG) -t=$(DOCKER_IMG):latest -f Dockerfile .
+
+# we use the "base" target in CI
+.PHONY: docker-base
+docker-base:
+	docker build -t=$(DOCKER_IMG)-base:$(TAG) -t=$(DOCKER_IMG)-base:latest -f Dockerfile --target base .
 
 .PHONY: docker-run
 docker-run: docker-build

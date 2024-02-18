@@ -1,4 +1,4 @@
-FROM ubuntu:22.04 AS build
+FROM ubuntu:22.04 AS base
 RUN apt-get update -yq && \
 		apt-get install -yq curl make clang llvm linux-headers-$(uname -r) && \
 		curl -O -L https://go.dev/dl/go1.21.7.linux-amd64.tar.gz && \
@@ -13,13 +13,17 @@ ENV PATH=$PATH:/usr/local/go/bin
 COPY go.mod /src
 COPY go.sum /src
 RUN go mod tidy
-
-# build
 COPY . /src
+
+FROM ubuntu:22.04 AS build
+COPY --from=base / /
+WORKDIR /src
+ENV PATH=$PATH:/usr/local/go/bin
 RUN make whispers
 
 FROM ubuntu:22.04 AS sshserver
 ENV DEBIAN_FRONTEND=noninteractive
+ENV PATH=$PATH:/usr/local/go/bin
 RUN apt-get update -yq && \
 		apt-get install -yq openssh-server && \
 		# some debug utilities, to aide exploration

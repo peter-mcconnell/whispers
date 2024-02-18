@@ -3,6 +3,8 @@ whispers
 
 A binary that dumps credentials from libpam (as used by openssh, passwd and others).
 
+[![asciicast](https://asciinema.org/a/641250.png)](https://asciinema.org/a/641250)
+
 ## Usage
 
 ```sh

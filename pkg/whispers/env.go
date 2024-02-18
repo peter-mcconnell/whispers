@@ -11,8 +11,5 @@ import (
 )
 
 func EnvSetup(_ context.Context, _ *config.Config) error {
-	if err := rlimit.RemoveMemlock(); err != nil {
-		return err
-	}
-	return nil
+	return rlimit.RemoveMemlock()
 }

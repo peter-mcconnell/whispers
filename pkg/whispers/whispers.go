@@ -87,9 +87,5 @@ func Listen(_ context.Context, cfg *config.Config) error {
 	<-stopper
 	log.Println("Received signal, exiting program..")
 
-	if err = rb.Close(); err != nil {
-		return err
-	}
-
-	return nil
+	return rb.Close()
 }

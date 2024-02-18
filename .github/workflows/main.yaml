@@ -6,13 +6,19 @@ on:
     branches:
       - main
  
+permissions:
+  contents: write
+
 jobs:
   test:
     runs-on: ubuntu-latest
+
     container:
       image: pemcconnell/whispers-base:latest
       env:
         KERNEL_HEADERS: /usr/src/linux-headers-6.5.0-14-generic
+        BUILD_VCS: false
+
     steps:
       - uses: actions/checkout@v4
 
@@ -23,7 +29,18 @@ jobs:
         uses: robherley/go-test-action@v0.1.0
 
       - name: Tag
-        uses: hennejg/github-tag-action@v4.4.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          release_branches: main
+        run: |
+          set -x
+          git config --global --add safe.directory '*'
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+
+          export PATH=$PATH:/usr/local/go/bin
+          go install github.com/davidrjonas/semver-cli@1.1.1
+          VERSION=$(git describe --tags `git rev-list --tags --max-count=1` 2> /dev/null || echo "0.1.0")
+          VERSION="v$(semver-cli inc "minor" "$VERSION" 2>/dev/null || echo "0.1.0")"
+          echo "version=$VERSION" >> $GITHUB_ENV
+          echo "::set-output name=version::$VERSION"
+
+          git tag $VERSION
+          git push origin --tags

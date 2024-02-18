@@ -9,8 +9,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     container:
       image: pemcconnell/whispers-base:latest
+      env:
+        KERNEL_HEADERS: /usr/src/linux-headers-6.5.0-14-generic
+        BUILD_VCS: false
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4

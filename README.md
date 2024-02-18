@@ -86,6 +86,10 @@ readelf -Ws /lib/x86_64-linux-gnu/libpam.so.0 | grep auth
 bpftrace -e 'uprobe:/lib/x86_64-linux-gnu/libpam.so.0:pam_get_authtok { printf("pam_get_authtok called\n"); }'
 ```
 
+## Docker images
+
+`docker pull pemcconnell/whispers-base:latest` - this is a simple docker image which contains the dependencies required to build whispers. It is used for CI
+
 ## Credits
 
  - I grabbed the libpam definitions from https://github.com/citronneur/pamspy

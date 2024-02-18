@@ -1,20 +1,9 @@
 whispers
 ========
 
-Dependencies:
+A binary that dumps credentials from libpam (as used by openssh, passwd and others).
 
-- golang
-- llvm-strip
-- clang
-- linux headers
-
-Build:
-
-```sh
-make docker-build
-```
-
-Usage:
+## Usage
 
 ```sh
 Usage of ./bin/whispers:
@@ -23,6 +12,49 @@ Usage of ./bin/whispers:
   -symbol string
     	Symbol to target (default "pam_get_authtok")
 ```
+
+
+## Demo
+
+Build a docker image with SSHD running and the whispers binary present
+
+```sh
+make docker-run
+```
+
+Now in a new terminal, ssh into the container we've just ran using port 2222:
+
+```sh
+ssh root@localhost -p 2222
+```
+
+Now in the previous terminal (where you ran `make docker-run`) exec into the container:
+
+```sh
+make docker-exec
+```
+
+And once inside the container, simply run `whispers`. Now repeat the ssh login in your other terminal
+- whispers should dump out the credentials as you log in. Also try changing the password with `passwd`
+and it should also capture this.
+
+
+## Building
+
+### Dependencies
+
+- golang
+- llvm-strip
+- clang
+- linux-headers
+- make
+
+### Build
+
+```sh
+make whispers
+```
+
 
 ## Exploration
 

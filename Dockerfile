@@ -1,7 +1,6 @@
 FROM ubuntu:22.04 AS build
 RUN apt-get update -yq && \
-		apt-get install -yq curl clang llvm && \
-		apt-get install -yq bpftrace vim systemtap systemtap-sdt-dev linux-headers-$(uname -r) && \
+		apt-get install -yq curl make clang llvm linux-headers-$(uname -r) && \
 		curl -O -L https://go.dev/dl/go1.21.7.linux-amd64.tar.gz && \
 		tar -C /usr/local -xzf go1.21.7.linux-amd64.tar.gz && \
 		rm -rf /var/lib/apt/lists/*
@@ -23,6 +22,7 @@ FROM ubuntu:22.04 AS sshserver
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -yq && \
 		apt-get install -yq openssh-server && \
+		# some debug utilities, to aide exploration
 		apt-get install -yq binutils bpftrace systemtap systemtap-sdt-dev linux-headers-$(uname -r) vim && \
 		mkdir -p /var/run/sshd && \
 		echo 'root:pass' | chpasswd && \

@@ -1,7 +1,7 @@
 whispers
 ========
 
-A binary that dumps credentials from libpam (as used by openssh, passwd and others).
+A binary that dumps credentials from libpam (as used by openssh, passwd and others). Written for a tech talk. Accompanying blog post: https://www.petermcconnell.com/posts/whispers/
 
 [![asciicast](https://asciinema.org/a/641250.png)](https://asciinema.org/a/641250)
 
@@ -75,7 +75,8 @@ ldd /usr/sbin/sshd | grep pam
 
 # alteratively, exit the container and run ldd on the binary path on host:
 docker inspect whispers -f '{{.GraphDriver.Data.MergedDir}}'
-ldd <directory given from previous command> | grep pam
+ldd <directory given from previous command>/usr/sbin/sshd | grep pam
+# ^ if this seems interesting to you, check out https://www.petermcconnell.com/posts/docker-overlayfs/
 
 
 # show auth symbols of libpam

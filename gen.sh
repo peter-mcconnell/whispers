@@ -7,7 +7,7 @@ set -x
 KERNEL_HEADERS=$(find /usr/src -name "linux-headers-$(uname -r)" -type d | head -n 1)
 
 # Include directory for bpf_helpers.h. This might need adjustments.
-BPF_HELPERS_DIR="/usr/src/linux-headers-$(uname -r)/tools/bpf/resolve_btfids/libbpf/include/"
+BPF_HELPERS_DIR="${KERNEL_HEADERS}/tools/bpf/resolve_btfids/libbpf/include/"
 
 # Run bpf2go with dynamic include paths
 go run github.com/cilium/ebpf/cmd/bpf2go -target amd64 bpf \

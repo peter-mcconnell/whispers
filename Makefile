@@ -1,6 +1,7 @@
 DOCKER_IMG?=pemcconnell/whispers
 BIN_DIR?=./bin
 TAG?=$(shell git rev-parse --short HEAD)
+BUILD_VCS?=true
 
 .PHONY: test
 test:
@@ -15,7 +16,7 @@ whispers:
 	mkdir -p $(BIN_DIR)
 	go mod tidy
 	go generate ./...
-	CGO_ENABLED=1 go build -o $(BIN_DIR)/whispers ./cmd/whispers
+	CGO_ENABLED=1 go build -buildvcs=$(BUILD_VCS) -o $(BIN_DIR)/whispers ./cmd/whispers
 
 .PHONY: docker-build
 docker-build:

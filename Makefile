@@ -24,7 +24,7 @@ docker-build:
 .PHONY: docker-run
 docker-run: docker-build
 	@-docker rm -f whispers > /dev/null 2>&1
-	docker run --privileged --pid=host -v /sys/kernel/:/sys/kernel/ --name whispers --rm -p 2222:22 -d $(DOCKER_IMG):$(TAG)
+	docker run --privileged --name whispers --rm -p 2222:22 -d $(DOCKER_IMG):$(TAG)
 
 .PHONY: docker-push
 docker-push:

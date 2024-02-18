@@ -2,7 +2,6 @@
 name: Main
 
 on:
-  pull_request:
   push:
     branches:
       - main
@@ -24,9 +23,7 @@ jobs:
         uses: robherley/go-test-action@v0.1.0
 
       - name: Tag
-        uses: K-Phoen/semver-release-action@master
+        uses: hennejg/github-tag-action@v4.1.jh1
         with:
-          release_branch: main
-          release_strategy: tag
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          release_branches: main

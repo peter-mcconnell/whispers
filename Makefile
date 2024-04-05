@@ -2,6 +2,7 @@ DOCKER_IMG?=pemcconnell/whispers
 BIN_DIR?=./bin
 TAG?=$(shell git rev-parse --short HEAD)
 BUILD_VCS?=true
+KERNEL?=$(shell uname -r)
 
 .PHONY: test
 test:
@@ -20,17 +21,17 @@ whispers:
 
 .PHONY: docker-build
 docker-build:
-	docker build -t=$(DOCKER_IMG):$(TAG) -t=$(DOCKER_IMG):latest -f Dockerfile .
+	docker build --platform=linux/amd64  -t=$(DOCKER_IMG):$(TAG) -t=$(DOCKER_IMG):latest -f Dockerfile .
 
 # we use the "base" target in CI
 .PHONY: docker-base
 docker-base:
-	docker build -t=$(DOCKER_IMG)-base:$(TAG) -t=$(DOCKER_IMG)-base:latest -f Dockerfile --target base .
+	docker build --platform=linux/amd64 -t=$(DOCKER_IMG)-base:$(TAG) -t=$(DOCKER_IMG)-base:latest -f Dockerfile --target base .
 
 .PHONY: docker-run
 docker-run: docker-build
 	@-docker rm -f whispers > /dev/null 2>&1
-	docker run --privileged --name whispers --rm -p 2222:22 -d $(DOCKER_IMG):$(TAG)
+	docker run --platform=linux/amd64 --privileged --name whispers --rm -p 2222:22 -d $(DOCKER_IMG):$(TAG)
 
 .PHONY: docker-push
 docker-push:

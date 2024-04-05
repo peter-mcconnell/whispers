@@ -1,6 +1,7 @@
+ARG KERNEL
 FROM ubuntu:22.04 AS base
 RUN apt-get update -yq && \
-		apt-get install -yq curl git make clang llvm linux-headers-$(uname -r) && \
+		apt-get install -yq curl git make clang llvm linux-headers-$(KERNEL) && \
 		curl -O -L https://go.dev/dl/go1.21.7.linux-amd64.tar.gz && \
 		tar -C /usr/local -xzf go1.21.7.linux-amd64.tar.gz && \
 		rm -rf /var/lib/apt/lists/*
@@ -21,13 +22,14 @@ WORKDIR /src
 ENV PATH=$PATH:/usr/local/go/bin
 RUN make whispers
 
+ARG KERNEL
 FROM ubuntu:22.04 AS sshserver
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PATH=$PATH:/usr/local/go/bin
 RUN apt-get update -yq && \
 		apt-get install -yq openssh-server && \
 		# some debug utilities, to aide exploration
-		apt-get install -yq binutils bpftrace systemtap systemtap-sdt-dev linux-headers-$(uname -r) vim && \
+		apt-get install -yq binutils bpftrace systemtap systemtap-sdt-dev linux-headers-$(KERNEL) vim && \
 		mkdir -p /var/run/sshd && \
 		echo 'root:pass' | chpasswd && \
 		sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \

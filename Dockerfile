@@ -1,7 +1,7 @@
 ARG KERNEL
 FROM ubuntu:22.04 AS base
 RUN apt-get update -yq && \
-		apt-get install -yq curl git make clang llvm linux-headers-$(KERNEL) && \
+		apt-get install -yq curl git make clang llvm linux-headers-$(KERNEL) libbpf-dev && \
 		curl -O -L https://go.dev/dl/go1.21.7.linux-amd64.tar.gz && \
 		tar -C /usr/local -xzf go1.21.7.linux-amd64.tar.gz && \
 		rm -rf /var/lib/apt/lists/*

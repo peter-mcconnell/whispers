@@ -17,7 +17,7 @@ whispers:
 	mkdir -p $(BIN_DIR)
 	go mod tidy
 	go generate ./...
-	CGO_ENABLED=1 go build -buildvcs=$(BUILD_VCS) -o $(BIN_DIR)/whispers ./cmd/whispers
+	CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -buildvcs=$(BUILD_VCS) -o $(BIN_DIR)/whispers ./cmd/whispers
 
 .PHONY: docker-build
 docker-build:
@@ -39,4 +39,5 @@ docker-push:
 
 .PHONY: docker-exec
 docker-exec:
+
 	docker exec -ti whispers bash

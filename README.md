@@ -46,15 +46,25 @@ and it should also capture this.
 ### Dependencies
 
 - golang
-- llvm-strip
+- llvm
 - clang
+- libbpf-dev
+- linux-tools-generic
 - linux-headers
 - make
 
 ### Build
 
+Generate vmlinux.h:
+
 ```sh
-make whispers
+make vmlinux
+```
+
+Build whispers
+
+```sh
+make whispers GOARCH=arm64  # or GOARCH=amd64
 ```
 
 

@@ -10,7 +10,7 @@ KERNEL_HEADERS=${KERNEL_HEADERS:-$(find /usr/src -name "linux-headers-$(uname -r
 BPF_HELPERS_DIR="${KERNEL_HEADERS}/tools/bpf/resolve_btfids/libbpf/include/"
 
 # Run bpf2go with dynamic include paths
-go run github.com/cilium/ebpf/cmd/bpf2go -target amd64 bpf \
+go run github.com/cilium/ebpf/cmd/bpf2go -target ${GOARCH:-amd64} bpf \
     ../../bpf/uretprobe.c -- \
     -I"${KERNEL_HEADERS}" \
     -I"${BPF_HELPERS_DIR}" \

@@ -33,7 +33,7 @@ docker-base:
 .PHONY: docker-run
 docker-run: docker-build
 	@-docker rm -f whispers > /dev/null 2>&1
-	docker run --platform=$(GOOS)/$(GOARCH) --privileged --name whispers --rm -p 2222:22 -d $(DOCKER_IMG):$(TAG)
+	docker run --platform=$(GOOS)/$(GOARCH) --privileged --name whispers --rm -p 2222:22 -d $(DOCKER_IMG):$(GOOS)-$(GOARCH)-$(TAG)
 
 .PHONY: docker-push
 docker-push:

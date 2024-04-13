@@ -30,6 +30,8 @@ ARG KERNEL
 FROM ubuntu:22.04 AS sshserver
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PATH=$PATH:/usr/local/go/bin
+ARG GOARCH
+ENV GOARCH=$GOARCH
 RUN apt-get update -yq && \
 		apt-get install -yq openssh-server && \
 		# some debug utilities, to aide exploration

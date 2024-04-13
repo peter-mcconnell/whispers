@@ -1,5 +1,3 @@
-//go:build amd64
-
 package whispers
 
 type eventT struct {

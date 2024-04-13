@@ -1,9 +1,11 @@
-ARG KERNEL
 FROM ubuntu:22.04 AS base
+ARG KERNEL
 RUN apt-get update -yq && \
-		apt-get install -yq curl git make clang llvm linux-headers-$(KERNEL) libbpf-dev && \
-		curl -O -L https://go.dev/dl/go1.21.7.linux-amd64.tar.gz && \
-		tar -C /usr/local -xzf go1.21.7.linux-amd64.tar.gz && \
+		apt-get install -yq curl git make clang llvm linux-headers-$(KERNEL) libbpf-dev
+ARG GOARCH
+ENV GOARCH=$GOARCH
+RUN curl -O -L https://go.dev/dl/go1.22.2.linux-${GOARCH}.tar.gz && \
+		tar -C /usr/local -xzf go1.22.2.linux-${GOARCH}.tar.gz && \
 		rm -rf /var/lib/apt/lists/*
 
 WORKDIR /src
@@ -20,7 +22,9 @@ COPY --from=base / /
 COPY . /src
 WORKDIR /src
 ENV PATH=$PATH:/usr/local/go/bin
-RUN make whispers
+ARG GOARCH
+ENV GOARCH=$GOARCH
+RUN make whispers GOARCH=$GOARCH
 
 ARG KERNEL
 FROM ubuntu:22.04 AS sshserver

@@ -46,4 +46,5 @@ docker-exec:
 
 .PHONY: vmlinux
 vmlinux:
+	@mkdir -p bpf/headers/
 	if [ ! -f bpf/headers/vmlinux.h ]; then bpftool btf dump file /sys/kernel/btf/vmlinux format c > bpf/headers/vmlinux.h; fi
